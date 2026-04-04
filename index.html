@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animal Lifestyle Quiz</title>
+  <style>
+    :root {
+      --bg-1: #f3fff6;
+      --bg-2: #e9fff1;
+      --card: rgba(255, 255, 255, 0.88);
+      --card-strong: rgba(255, 255, 255, 0.97);
+      --text: #1f3a2b;
+      --muted: #587564;
+      --accent: #2f9e44;
+      --accent-2: #74c69d;
+      --line: rgba(47, 158, 68, 0.14);
+      --shadow: 0 18px 50px rgba(34, 94, 58, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #dff7e8 0, transparent 28%),
+        radial-gradient(circle at top right, #d7f3e4 0, transparent 26%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2));
+      min-height: 100vh;
+      padding: 28px;
+    }
+
+    .shell {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.76));
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      right: -80px;
+      top: -100px;
+      background: radial-gradient(circle, rgba(116,198,157,0.22), rgba(47,158,68,0.08), transparent 68%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(47, 158, 68, 0.09);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 14px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 740px;
+      color: var(--muted);
+      font-size: 1.04rem;
+      line-height: 1.65;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .quiz-panel,
+    .side-panel {
+      background: var(--card);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .quiz-panel {
+      padding: 22px;
+    }
+
+    .side-panel {
+      padding: 22px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .section-title {
+      margin: 4px 0 16px;
+      font-size: 1rem;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .question {
+      background: var(--card-strong);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 16px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .question:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px rgba(34, 94, 58, 0.08);
+      border-color: rgba(47, 158, 68, 0.24);
+    }
+
+    .question h3 {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      position: relative;
+    }
+
+    .option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .option span {
+      display: block;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(47, 158, 68, 0.14);
+      background: #fff;
+      color: #30493b;
+      line-height: 1.45;
+      transition: all 0.16s ease;
+      cursor: pointer;
+    }
+
+    .option span:hover {
+      border-color: rgba(47, 158, 68, 0.34);
+      background: #fbfffc;
+    }
+
+    .option input:checked + span {
+      border-color: transparent;
+      background: linear-gradient(135deg, rgba(47, 158, 68, 0.14), rgba(116, 198, 157, 0.18));
+      box-shadow: inset 0 0 0 1px rgba(47, 158, 68, 0.22);
+      color: #1f3a2b;
+      font-weight: 600;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 14px 24px rgba(47, 158, 68, 0.26);
+    }
+
+    .secondary {
+      color: var(--text);
+      background: rgba(47, 158, 68, 0.1);
+    }
+
+    .mini-card {
+      background: var(--card-strong);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .mini-card h4 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .mini-card p,
+    .mini-card li {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.96rem;
+    }
+
+    .mini-card ul {
+      padding-left: 18px;
+      margin: 8px 0 0;
+    }
+
+    .result {
+      min-height: 180px;
+      white-space: pre-line;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .side-panel {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="eyebrow"></div>
+      <h1>Which animal matches your lifestyle?</h1>
+      <p>
+        Made by Ksenia Shkarina as a part of Project 3
+      </p>
+    </section>
+
+    <div class="layout">
+      <main class="quiz-panel">
+        <div class="section-title">Quiz</div>
+
+        <form id="quizForm">
+          <div class="question">
+            <h3>1. Sleep time</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q1" value="cat,dog,dolphin"><span>I sleep for a big part of my day. Approximately 12–16 hours.</span></label>
+              <label class="option"><input type="radio" name="q1" value="fox"><span>8 to 10 hours per day. I sleep for a good amount of hours.</span></label>
+              <label class="option"><input type="radio" name="q1" value="deer"><span>I sleep for a little amount of time.</span></label>
+              <label class="option"><input type="radio" name="q1" value="bear"><span>My sleep pattern is very inconsistent and depends on the season.</span></label>
+            </div>
+          </div>
+
+          <div class="question">
+            <h3>2. Diet</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q2" value="cat,fox"><span>I prefer meat over vegetables.</span></label>
+              <label class="option"><input type="radio" name="q2" value="dog"><span>My diet is mixed.</span></label>
+              <label class="option"><input type="radio" name="q2" value="dolphin"><span>I have a preference for fish in my diet.</span></label>
+              <label class="option"><input type="radio" name="q2" value="deer"><span>I only consume vegetables.</span></label>
+              <label class="option"><input type="radio" name="q2" value="bear"><span>Anything that is available.</span></label>
+            </div>
+          </div>
+
+          <div class="question">
+            <h3>3. Most active hours</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q3" value="cat,deer,bear"><span>Early mornings / late evenings.</span></label>
+              <label class="option"><input type="radio" name="q3" value="dog"><span>Late afternoon.</span></label>
+              <label class="option"><input type="radio" name="q3" value="fox"><span>Night hours.</span></label>
+              <label class="option"><input type="radio" name="q3" value="dolphin"><span>Depends on the activity I’m doing that day.</span></label>
+            </div>
+          </div>
+
+          <div class="question">
+            <h3>4. Preference to be alone or with company</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q4" value="cat"><span>I only like spending time with trusted people.</span></label>
+              <label class="option"><input type="radio" name="q4" value="dog"><span>I’m social and enjoy company.</span></label>
+              <label class="option"><input type="radio" name="q4" value="fox,bear"><span>I prefer spending time alone.</span></label>
+              <label class="option"><input type="radio" name="q4" value="dolphin"><span>It’s hard for me to live on my own.</span></label>
+              <label class="option"><input type="radio" name="q4" value="deer"><span>Depends on the situation.</span></label>
+            </div>
+          </div>
+
+          <div class="question">
+            <h3>5. Do you like to explore new places or stay in familiar ones?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q5" value="cat,deer,bear"><span>I prefer staying in my familiar surroundings.</span></label>
+              <label class="option"><input type="radio" name="q5" value="dog"><span>I like to explore new places.</span></label>
+              <label class="option"><input type="radio" name="q5" value="fox"><span>I like to travel, only if I’m not alone.</span></label>
+              <label class="option"><input type="radio" name="q5" value="dolphin"><span>I adapt well to any surroundings.</span></label>
+            </div>
+          </div>
+
+          <div class="question">
+            <h3>6. Do you make decisions quickly or take time to observe first?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q6" value="cat"><span>I react fast when the situation calls for it, but if I have time, I’d prefer to be cautious.</span></label>
+              <label class="option"><input type="radio" name="q6" value="dog,fox,bear"><span>I often act quickly and directly.</span></label>
+              <label class="option"><input type="radio" name="q6" value="dolphin"><span>Depends on the situation.</span></label>
+              <label class="option"><input type="radio" name="q6" value="deer"><span>I usually observe and think for a while before making a decision.</span></label>
+            </div>
+          </div>
+
+          <div class="question">
+            <h3>7. Do you adapt fast to change or need time?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q7" value="cat"><span>I usually need some time; I like stability.</span></label>
+              <label class="option"><input type="radio" name="q7" value="dog,dolphin"><span>I often adapt well, especially with help of others.</span></label>
+              <label class="option"><input type="radio" name="q7" value="fox"><span>I adapt very well to change.</span></label>
+              <label class="option"><input type="radio" name="q7" value="deer"><span>I usually prefer gradual change.</span></label>
+              <label class="option"><input type="radio" name="q7" value="bear"><span>I would prefer not to change anything at all, unless it’s an urgent situation.</span></label>
+            </div>
+          </div>
+
+          <div class="question">
+            <h3>8. Do you protect your personal space strongly?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q8" value="cat,fox,deer,bear"><span>Yes, very strongly.</span></label>
+              <label class="option"><input type="radio" name="q8" value="dog"><span>I care about personal space less than most people.</span></label>
+              <label class="option"><input type="radio" name="q8" value="dolphin"><span>I don’t mind sharing my personal space as long as it’s someone familiar.</span></label>
+            </div>
+          </div>
+
+          <div class="question">
+            <h3>9. Are you naturally cautious or curious?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q9" value="cat,dog,fox,dolphin"><span>Curious.</span></label>
+              <label class="option"><input type="radio" name="q9" value="deer,bear"><span>Cautious.</span></label>
+            </div>
+          </div>
+
+          <div class="question">
+            <h3>10. Do you prefer short bursts of activity or long steady effort?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q10" value="cat,dog,fox"><span>Bursts of energy.</span></label>
+              <label class="option"><input type="radio" name="q10" value="dolphin,deer,bear"><span>Steady effort.</span></label>
+            </div>
+          </div>
+
+          <div class="question">
+            <h3>11. Do you enjoy competition or avoid it?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q11" value="cat"><span>I prefer to avoid conflicts.</span></label>
+              <label class="option"><input type="radio" name="q11" value="dog"><span>I enjoy healthy competition.</span></label>
+              <label class="option"><input type="radio" name="q11" value="fox,dolphin,deer"><span>I compete strategically to establish my place.</span></label>
+              <label class="option"><input type="radio" name="q11" value="bear"><span>I specifically choose the field where there is no competition.</span></label>
+            </div>
+          </div>
+
+          <div class="question">
+            <h3>12. Would you want to have one romantic partner for the rest of your life, or multiple?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q12" value="cat,dog,dolphin,bear"><span>I would prefer to have multiple partners.</span></label>
+              <label class="option"><input type="radio" name="q12" value="fox"><span>One partner is enough for me.</span></label>
+              <label class="option"><input type="radio" name="q12" value="deer"><span>Multiple partners and even better at the same time.</span></label>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="primary" id="seeResultBtn">See my result</button>
+            <button type="reset" class="secondary" id="resetBtn">Reset</button>
+          </div>
+        </form>
+      </main>
+
+      <aside class="side-panel">
+        <div class="section-title">Your result</div>
+
+        <div class="mini-card">
+          <h4>Result card</h4>
+          <div id="result" class="result">Your match will appear here after you answer all questions.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const animalDescriptions = {
+      cat: "You sure have an odd lifestyle, but whatever works for you mr.MeowMeow",
+      dog: "Your energy scares me",
+      fox: "Be proud! Fictional foxes are loved my masses. Maybe a bit too much.",
+      dolphin: "Blup blup blup or whatever",
+      deer: " You might be kidnapped in December",
+      bear: "Panga bear? Grizzly bear? Polar bear? That's up to you"
+    };
+
+    const animals = ["cat", "dog", "fox", "dolphin", "deer", "bear"];
+
+    function calculateScores() {
+      const scores = { cat: 0, dog: 0, fox: 0, dolphin: 0, deer: 0, bear: 0 };
+
+      for (let i = 1; i <= 12; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (!selected) continue;
+
+        selected.value.split(",").forEach(animal => {
+          const key = animal.trim();
+          if (scores[key] !== undefined) {
+            scores[key]++;
+          }
+        });
+      }
+
+      return scores;
+    }
+
+    function checkAnswers() {
+      for (let i = 1; i <= 12; i++) {
+        if (!document.querySelector(`input[name="q${i}"]:checked`)) {
+          document.getElementById("result").textContent = `Please answer question ${i} before submitting.`;
+          return;
+        }
+      }
+
+      const scores = calculateScores();
+      const topScore = Math.max(...Object.values(scores));
+      const winners = animals.filter(animal => scores[animal] === topScore);
+
+      let resultText = "";
+
+      if (winners.length === 1) {
+        const winner = winners[0];
+        resultText = `Your animal is ${winner.toUpperCase()}\n\n${animalDescriptions[winner]}\n\nScores:\n`;
+      } else {
+        resultText = `You are a mix of ${winners.map(w => w.toUpperCase()).join(" + ")}\n\n`;
+        winners.forEach(winner => {
+          resultText += `${animalDescriptions[winner]}\n`;
+        });
+      }
+
+      document.getElementById("result").textContent = resultText;
+    }
+
+    function resetQuiz() {
+      setTimeout(() => {
+        document.getElementById("result").textContent = "Your match will appear here after you answer all questions.";
+      }, 0);
+    }
+
+    document.getElementById("seeResultBtn").addEventListener("click", checkAnswers);
+    document.getElementById("resetBtn").addEventListener("click", resetQuiz);
+  </script>
+</body>
+</html>
