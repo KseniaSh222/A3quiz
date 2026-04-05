@@ -51,12 +51,12 @@ function checkAnswers() {
   document.getElementById("result").textContent = rText;
 }
 
-function resetQuiz() {
+document.getElementById("seeResultBtn").addEventListener("click", checkAnswers);
+
+document.getElementById("resetBtn").addEventListener("click", function () {
   setTimeout(() => {
     document.getElementById("result").textContent =
       "Your match will appear here after you answer all questions.";
   }, 0);
-}
+});
 
-document.getElementById("seeResultBtn").addEventListener("click", checkAnswers);
-document.getElementById("resetBtn").addEventListener("click", resetQuiz);
