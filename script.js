@@ -49,5 +49,4 @@ document.getElementById("resetBtn").addEventListener("click", function () {
     document.getElementById("result").textContent =
       "Your match will appear here after you answer all questions.";
   }, 0);
-});resultText;
-}
+});
